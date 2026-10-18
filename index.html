@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071426">
+  <title>Информатика әлемі — викторина</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071426;
+      --surface: #0d1e34;
+      --surface-2: #112640;
+      --line: rgba(176, 208, 242, .13);
+      --text: #f2f7ff;
+      --muted: #91a6bf;
+      --cyan: #4bdcff;
+      --cyan-dark: #17b6d9;
+      --green: #48d597;
+      --red: #ff7181;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .32);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at 15% 5%, rgba(20, 108, 160, .2), transparent 36%),
+                  radial-gradient(ellipse at 95% 75%, rgba(20, 78, 139, .18), transparent 34%), var(--bg);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(100% - 40px, 1060px); margin: 0 auto; padding: 28px 0 40px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 34px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; letter-spacing: .03em; }
+    .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: var(--cyan); background: rgba(75, 220, 255, .1); border: 1px solid rgba(75, 220, 255, .22); }
+    .brand-mark svg { width: 21px; height: 21px; }
+    .offline { display: inline-flex; align-items: center; gap: 8px; color: #afc2d8; font-size: 12px; }
+    .offline::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px rgba(72, 213, 151, .65); }
+    .view { display: none; animation: rise .45s ease both; }
+    .view.active { display: block; }
+    @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .hero { display: grid; grid-template-columns: 1.12fr .88fr; gap: 30px; align-items: stretch; }
+    .hero-copy { padding: 34px 10px 30px 0; }
+    .eyebrow { color: var(--cyan); font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { margin: 16px 0 15px; font-size: clamp(42px, 6vw, 68px); line-height: 1.04; letter-spacing: -.055em; }
+    h1 span { color: var(--cyan); }
+    .intro { max-width: 490px; margin: 0; color: #a5b7cc; font-size: 16px; line-height: 1.75; }
+    .feature-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 27px; }
+    .feature { display: inline-flex; gap: 7px; align-items: center; padding: 8px 11px; border-radius: 9px; border: 1px solid var(--line); color: #b5c7da; font-size: 11px; }
+    .feature b { color: var(--cyan); font-size: 13px; }
+    .panel { background: linear-gradient(145deg, rgba(17, 38, 64, .96), rgba(10, 27, 47, .96)); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); }
+    .start-card { padding: 27px; }
+    .card-title { margin: 0 0 7px; font-size: 19px; letter-spacing: -.02em; }
+    .card-subtitle { margin: 0 0 22px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    label { display: block; margin-bottom: 8px; color: #dce8f5; font-size: 12px; font-weight: 650; }
+    .input-wrap { position: relative; }
+    .input-wrap svg { position: absolute; top: 50%; left: 14px; width: 17px; height: 17px; color: #7691ad; transform: translateY(-50%); }
+    input { width: 100%; height: 49px; padding: 0 14px 0 42px; outline: none; color: var(--text); background: #09192b; border: 1px solid rgba(176, 208, 242, .17); border-radius: 10px; transition: border-color .2s, box-shadow .2s; }
+    input::placeholder { color: #647991; }
+    input:focus { border-color: var(--cyan-dark); box-shadow: 0 0 0 3px rgba(75, 220, 255, .1); }
+    .error { min-height: 17px; margin: 6px 0 0; color: var(--red); font-size: 11px; }
+    .primary, .secondary { min-height: 48px; border: 0; border-radius: 10px; padding: 0 18px; font-weight: 750; transition: transform .18s, box-shadow .18s, background .18s; }
+    .primary { color: #052033; background: linear-gradient(100deg, #64e5ff, #36c8ec); box-shadow: 0 8px 22px rgba(45, 194, 232, .2); }
+    .primary:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(45, 194, 232, .3); }
+    .primary:active, .secondary:active { transform: translateY(0); }
+    .start-button { display: flex; width: 100%; align-items: center; justify-content: center; gap: 10px; margin-top: 2px; }
+    .start-button svg, .next-button svg { width: 17px; height: 17px; }
+    .rules { margin-top: 22px; padding-top: 19px; border-top: 1px solid var(--line); }
+    .rules h3 { margin: 0 0 12px; color: #dce8f5; font-size: 12px; }
+    .rule { display: flex; gap: 9px; align-items: flex-start; margin: 9px 0; color: #96abc2; font-size: 11px; line-height: 1.55; }
+    .rule span { flex: 0 0 auto; display: grid; place-items: center; width: 17px; height: 17px; border-radius: 6px; color: var(--cyan); background: rgba(75, 220, 255, .1); font-size: 10px; font-weight: 800; }
+    .quiz-wrap { max-width: 790px; margin: 0 auto; }
+    .quiz-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 17px; }
+    .player { color: #9eb2c9; font-size: 12px; }
+    .player strong { color: var(--text); }
+    .score-pill { display: inline-flex; gap: 7px; align-items: center; padding: 9px 13px; border: 1px solid rgba(75, 220, 255, .19); border-radius: 10px; color: var(--cyan); background: rgba(75, 220, 255, .07); font-size: 12px; font-weight: 750; }
+    .score-pill svg { width: 16px; height: 16px; }
+    .progress-box { margin-bottom: 17px; padding: 17px 20px; }
+    .progress-meta { display: flex; justify-content: space-between; margin-bottom: 11px; color: #9db1c7; font-size: 11px; }
+    .progress-meta strong { color: #e9f3fd; }
+    .progress-track { height: 7px; overflow: hidden; border-radius: 99px; background: #08182a; }
+    .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #22badd, #67e6ff); transition: width .35s ease; }
+    .question-card { padding: 27px; }
+    .question-head { display: flex; justify-content: space-between; gap: 15px; align-items: center; margin-bottom: 18px; }
+    .category { display: inline-flex; padding: 7px 10px; border: 1px solid rgba(75, 220, 255, .17); border-radius: 8px; color: #7cdef0; background: rgba(75, 220, 255, .06); font-size: 10px; font-weight: 700; }
+    .timer { display: flex; align-items: center; gap: 8px; color: #b9c9d9; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .timer-ring { position: relative; width: 35px; height: 35px; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--cyan) var(--timer-angle, 360deg), rgba(176, 208, 242, .13) 0); }
+    .timer-ring::before { content: ""; position: absolute; inset: 3px; border-radius: inherit; background: #10243a; }
+    .timer-ring span { position: relative; font-size: 11px; font-weight: 800; }
+    .timer.urgent { color: var(--red); }
+    .timer.urgent .timer-ring { background: conic-gradient(var(--red) var(--timer-angle, 360deg), rgba(176, 208, 242, .13) 0); }
+    .question { margin: 0 0 23px; font-size: clamp(19px, 3vw, 25px); line-height: 1.45; letter-spacing: -.02em; }
+    .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .answer { display: flex; gap: 12px; align-items: center; min-height: 58px; padding: 12px 14px; text-align: left; color: #d2deeb; background: rgba(7, 20, 38, .58); border: 1px solid rgba(176, 208, 242, .14); border-radius: 11px; transition: background .18s, border-color .18s, transform .18s; }
+    .answer:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(75, 220, 255, .5); background: rgba(75, 220, 255, .07); }
+    .answer-key { flex: 0 0 27px; display: grid; place-items: center; width: 27px; height: 27px; border-radius: 8px; color: #83a0bc; background: rgba(176, 208, 242, .08); font-size: 11px; font-weight: 800; }
+    .answer-text { font-size: 12px; line-height: 1.45; }
+    .answer.correct { color: #d9fff0; border-color: rgba(72, 213, 151, .65); background: rgba(72, 213, 151, .12); }
+    .answer.correct .answer-key { color: #062d20; background: var(--green); }
+    .answer.wrong { color: #ffe5e8; border-color: rgba(255, 113, 129, .62); background: rgba(255, 113, 129, .1); }
+    .answer.wrong .answer-key { color: #351016; background: var(--red); }
+    .answer:disabled { cursor: default; }
+    .feedback { min-height: 22px; margin-top: 15px; color: var(--muted); font-size: 12px; }
+    .feedback.good { color: var(--green); }
+    .feedback.bad { color: var(--red); }
+    .feedback.neutral { color: #ffd782; }
+    .question-footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 13px; }
+    .hint { color: #70869e; font-size: 10px; }
+    .next-button { display: inline-flex; gap: 9px; align-items: center; }
+    .next-button:disabled { opacity: .42; cursor: not-allowed; box-shadow: none; transform: none; }
+    .result { max-width: 680px; margin: 24px auto 0; padding: 36px; text-align: center; }
+    .result-icon { display: grid; place-items: center; width: 68px; height: 68px; margin: 0 auto 18px; border: 1px solid rgba(75, 220, 255, .25); border-radius: 22px; color: var(--cyan); background: rgba(75, 220, 255, .09); }
+    .result-icon svg { width: 32px; height: 32px; }
+    .result h2 { margin: 0 0 8px; font-size: 28px; letter-spacing: -.04em; }
+    .result-note { margin: 0; color: #9eb2c8; font-size: 13px; line-height: 1.65; }
+    .score-display { margin: 25px 0 20px; padding: 23px 12px; border: 1px solid var(--line); border-radius: 15px; background: rgba(7, 20, 38, .45); }
+    .score-display strong { display: block; color: var(--cyan); font-size: 48px; letter-spacing: -.06em; }
+    .score-display span { color: #91a6bf; font-size: 11px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+    .stat { padding: 14px 8px; border: 1px solid var(--line); border-radius: 11px; background: rgba(7, 20, 38, .35); }
+    .stat strong { display: block; margin-bottom: 5px; font-size: 19px; }
+    .stat span { color: #8298b0; font-size: 10px; }
+    .stat:first-child strong { color: var(--green); }
+    .stat:nth-child(2) strong { color: var(--red); }
+    .restart { min-width: 190px; }
+    .footer { margin-top: 32px; text-align: center; color: #536a83; font-size: 10px; }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 28px, 560px); padding-top: 18px; }
+      .topbar { margin-bottom: 20px; }
+      .hero { grid-template-columns: 1fr; gap: 18px; }
+      .hero-copy { padding: 10px 0 0; }
+      h1 { font-size: clamp(42px, 12vw, 58px); }
+      .intro { font-size: 14px; }
+      .feature-row { margin-top: 18px; }
+      .start-card { padding: 22px; }
+      .question-card { padding: 20px; }
+      .answer { min-height: 55px; padding: 10px; gap: 9px; }
+    }
+    @media (max-width: 480px) {
+      .answers { grid-template-columns: 1fr; gap: 8px; }
+      .answer { min-height: 49px; }
+      .progress-box { padding: 14px; }
+      .quiz-top { align-items: flex-start; }
+      .question-footer { align-items: flex-end; }
+      .hint { max-width: 140px; line-height: 1.5; }
+      .result { padding: 25px 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+    /* Минималистік көрініс */
+    :root { --bg: #0a1422; --surface: #101e30; --surface-2: #14263b; --line: rgba(180, 205, 230, .12); --cyan: #53d8ed; --cyan-dark: #37bfd6; --shadow: 0 12px 32px rgba(0, 0, 0, .16); }
+    body { background: var(--bg); }
+    .shell { max-width: 980px; }
+    .topbar { margin-bottom: 26px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 9px; box-shadow: none; }
+    .hero { gap: 44px; }
+    .hero-copy { padding-top: 45px; }
+    h1 { font-size: clamp(40px, 5.4vw, 60px); }
+    .panel { background: var(--surface); border-radius: 14px; box-shadow: none; }
+    .start-card, .question-card { padding: 24px; }
+    .feature { border-radius: 7px; }
+    .primary { background: var(--cyan); box-shadow: none; border-radius: 8px; }
+    .primary:hover { background: #78e5f3; box-shadow: none; }
+    .answer { border-radius: 8px; background: #0c1929; }
+    .answer:hover:not(:disabled) { transform: none; }
+    .progress-box { padding: 14px 17px; }
+    .result { border-radius: 14px; }
+    @media (max-width: 720px) { .hero { gap: 16px; } .hero-copy { padding-top: 8px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2.5"/><path d="M8 21h8M12 17v4M8.5 9.5l2 2-2 2M13 13.5h3"/></svg></span>
+        <span>БІЛІМ · ТЕХНОЛОГИЯ · ОЙЫН</span>
+      </div>
+      <span class="offline">Офлайн қолжетімді</span>
+    </header>
+
+    <main>
+      <section id="homeView" class="view active" aria-labelledby="mainTitle">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow">Біліміңді тексер</div>
+            <h1 id="mainTitle">Информатика<br><span>әлемі</span></h1>
+            <p class="intro">Цифрлық әлемді қаншалықты жақсы білесің? Информатика бойынша 30 сұраққа жауап беріп, біліміңді сынап көр.</p>
+            <div class="feature-row" aria-label="Ойын мүмкіндіктері">
+              <div class="feature"><b>30</b> сұрақ</div><div class="feature"><b>1 мин</b> әр сұраққа</div><div class="feature"><b>300</b> ұпайға дейін</div>
+            </div>
+          </div>
+          <div class="panel start-card">
+            <h2 class="card-title">Саяхатты бастайық</h2>
+            <p class="card-subtitle">Атыңды енгіз де, информатика әлеміне қадам бас.</p>
+            <form id="startForm" novalidate>
+              <label for="playerName">Ойыншының аты-жөні</label>
+              <div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.1 3.3-5 7-5s6.4 1.9 7 5"/></svg><input id="playerName" type="text" maxlength="40" autocomplete="name" placeholder="Мысалы, Айдана Нұрланқызы" aria-describedby="nameError"></div>
+              <p id="nameError" class="error" role="alert"></p>
+              <button class="primary start-button" type="submit">Ойынды бастау <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </form>
+            <div class="rules">
+              <h3>Ойын ережелері</h3>
+              <div class="rule"><span>1</span>Әр сұраққа 4 нұсқаның ішінен бір жауап таңда.</div>
+              <div class="rule"><span>2</span>Дұрыс жауапқа 10 ұпай беріледі.</div>
+              <div class="rule"><span>3</span>1 минут ішінде жауап беруге тырыс. Уақыт өтсе, келесі сұраққа өте аласың.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="quizView" class="view" aria-label="Викторина">
+        <div class="quiz-wrap">
+          <div class="quiz-top"><div class="player">Ойыншы: <strong id="quizPlayer"></strong></div><div class="score-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg><span id="scoreValue">0</span> ұпай</div></div>
+          <div class="panel progress-box"><div class="progress-meta"><span>Ойын барысы</span><strong id="progressLabel">1 / 30</strong></div><div class="progress-track" role="progressbar" aria-label="Ойын барысы" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><div id="progressFill" class="progress-fill"></div></div></div>
+          <div class="panel question-card">
+            <div class="question-head"><span id="category" class="category"></span><div id="timer" class="timer"><div class="timer-ring"><span id="timeValue">60</span></div><span>секунд қалды</span></div></div>
+            <h2 id="questionText" class="question"></h2>
+            <div id="answers" class="answers"></div>
+            <div id="feedback" class="feedback" aria-live="polite"></div>
+            <div class="question-footer"><span class="hint">Жауапты таңдағаннан кейін ол өзгертілмейді.</span><button id="nextButton" class="primary next-button" type="button" disabled>Келесі сұрақ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="resultView" class="view" aria-labelledby="resultTitle">
+        <div class="panel result">
+          <div class="result-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></div>
+          <div class="eyebrow">Ойын аяқталды</div><h2 id="resultTitle">Жарайсың!</h2>
+          <p id="resultNote" class="result-note"></p>
+          <div class="score-display"><strong id="finalScore">0</strong><span>300 ұпайдан · <b id="percentage">0%</b></span></div>
+          <div class="stats"><div class="stat"><strong id="correctCount">0</strong><span>Дұрыс жауап</span></div><div class="stat"><strong id="wrongCount">0</strong><span>Қате жауап</span></div><div class="stat"><strong>30</strong><span>Барлық сұрақ</span></div></div>
+          <button id="restartButton" class="primary restart" type="button">Қайта ойнау</button>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">Информатика әлемі · Біліміңді ойын арқылы шыңда</footer>
+  </div>
+
+  <script>
+    'use strict';
+    const questions = [
+      { category: 'Информатика негіздері', question: 'Информатика ғылымы нені зерттейді?', answers: ['Ақпаратты жинау, сақтау, өңдеу және жеткізу тәсілдерін', 'Тек компьютер құрылғыларын құрастыруды', 'Табиғат құбылыстарын ғана', 'Сандардың геометриялық қасиеттерін'], correct: 0 },
+      { category: 'Компьютер құрылғылары', question: 'Ақпаратты экранда көрсететін құрылғы қалай аталады?', answers: ['Пернетақта', 'Монитор', 'Принтер', 'Тінтуір'], correct: 1 },
+      { category: 'Компьютер құрылғылары', question: 'Компьютерге мәтін енгізуге арналған негізгі құрылғыны көрсет.', answers: ['Динамик', 'Сканер', 'Пернетақта', 'Проектор'], correct: 2 },
+      { category: 'Процессор және RAM', question: 'Процессордың негізгі қызметі қандай?', answers: ['Дыбысты күшейту', 'Ақпаратты басып шығару', 'Файлдарды қағазға түсіру', 'Командаларды орындап, деректерді өңдеу'], correct: 3 },
+      { category: 'Процессор және RAM', question: 'Жедел жад (RAM) туралы дұрыс тұжырымды таңда.', answers: ['Компьютер сөнгенде ондағы деректер сақталмайды', 'Ол тек суреттерді басып шығарады', 'Ол интернет жылдамдығын өлшейді', 'Ол ақпаратты мәңгі сақтайды'], correct: 0 },
+      { category: 'Ақпарат өлшемдері', question: '1 байт неше биттен тұрады?', answers: ['2 бит', '8 бит', '10 бит', '16 бит'], correct: 1 },
+      { category: 'Ақпарат өлшемдері', question: 'Төмендегі бірліктердің қайсысы ең үлкен?', answers: ['Килобайт', 'Мегабайт', 'Гигабайт', 'Байт'], correct: 2 },
+      { category: 'HTML', question: 'HTML тілінің негізгі міндеті қандай?', answers: ['Веб-беттің құрылымы мен мазмұнын белгілеу', 'Компьютерді вирусқа тексеру', 'Деректер қорын басқару', 'Интернет байланысын жылдамдату'], correct: 0 },
+      { category: 'HTML', question: 'HTML құжатындағы ең үлкен деңгейлі тақырып тегін таңда.', answers: ['<p>', '<h1>', '<title>', '<img>'], correct: 1 },
+      { category: 'CSS', question: 'CSS не үшін қолданылады?', answers: ['Деректерді шифрлау үшін', 'Серверді баптау үшін', 'Веб-беттің сыртқы көрінісін безендіру үшін', 'Бағдарламаны іске қосу үшін'], correct: 2 },
+      { category: 'JavaScript', question: 'Веб-бетке интерактивтілік қосатын тіл қайсы?', answers: ['SQL', 'HTML', 'CSS', 'JavaScript'], correct: 3 },
+      { category: 'Бағдарламалау тілдері', question: 'Python қандай тілге жатады?', answers: ['Бағдарламалау тіліне', 'Белгілеу тіліне', 'Операциялық жүйеге', 'Графикалық редакторға'], correct: 0 },
+      { category: 'Алгоритмдер', question: 'Алгоритм дегеніміз не?', answers: ['Компьютердің физикалық бөлігі', 'Мәселені шешуге арналған нақты қадамдар тізбегі', 'Ақпараттың өлшем бірлігі', 'Интернеттегі веб-сайт атауы'], correct: 1 },
+      { category: 'Алгоритмдер', question: 'Алгоритмдегі шартқа байланысты әрекет таңдау құрылымы қалай аталады?', answers: ['Сызықтық тармақ', 'Файл', 'Тармақталу', 'Жад ұяшығы'], correct: 2 },
+      { category: 'Операциялық жүйелер', question: 'Операциялық жүйенің мысалын көрсет.', answers: ['Google Chrome', 'Microsoft Word', 'Adobe Photoshop', 'Linux'], correct: 3 },
+      { category: 'Интернет', question: 'Веб-сайттың мекенжайы қалай аталады?', answers: ['URL', 'CPU', 'RAM', 'USB'], correct: 0 },
+      { category: 'Киберқауіпсіздік', question: 'Қауіпсіз құпиясөзді таңда.', answers: ['12345678', 'Aq!7mQ2#zP', 'password', 'туғанкүнім'], correct: 1 },
+      { category: 'Киберқауіпсіздік', question: 'Күдікті хаттағы бейтаныс сілтемені алсаң, не істеген дұрыс?', answers: ['Бірден ашып көру', 'Құпиясөзіңді енгізу', 'Сілтемені ашпау және хатты тексеру', 'Хатты барлығына жіберу'], correct: 2 },
+      { category: 'Деректер қоры', question: 'Деректер қоры дегеніміз не?', answers: ['Компьютер ойындарының жинағы', 'Графика салуға арналған бағдарлама', 'Интернетке қосылу құрылғысы', 'Белгілі бір тәртіппен ұйымдастырылған деректер жиынтығы'], correct: 3 },
+      { category: 'Деректер қоры', question: 'Деректер қорындағы жол мен бағаннан тұратын негізгі құрылым қалай аталады?', answers: ['Кесте', 'Алгоритм', 'Браузер', 'Процессор'], correct: 0 },
+      { category: 'Файлдар', question: 'Мәтіндік құжатқа жиі қолданылатын файл кеңейтімін таңда.', answers: ['.mp3', '.docx', '.png', '.exe'], correct: 1 },
+      { category: 'Компьютер құрылғылары', question: 'Ақпаратты қағазға басып шығаратын құрылғы қайсы?', answers: ['Микрофон', 'Веб-камера', 'Принтер', 'Тінтуір'], correct: 2 },
+      { category: 'Желі', question: 'Жергілікті желі (LAN) дегеніміз не?', answers: ['Шағын аумақтағы құрылғыларды біріктіретін желі', 'Тек бір компьютердегі бағдарлама', 'Сурет өңдеу тәсілі', 'Ақпаратты сығу форматы'], correct: 0 },
+      { category: 'Интернет', question: 'Интернетке веб-сайттарды қарау үшін қолданылатын бағдарлама қалай аталады?', answers: ['Компилятор', 'Браузер', 'Драйвер', 'Архиватор'], correct: 1 },
+      { category: 'Алгоритмдер', question: 'Қайталанатын командалар тізбегі алгоритмнің қандай құрылымын құрайды?', answers: ['Тармақталу', 'Сызықтық құрылым', 'Цикл', 'Кесте'], correct: 2 },
+      { category: 'Бағдарламалау', question: 'Бағдарламадағы қатені іздеу және түзету үдерісі қалай аталады?', answers: ['Пішімдеу', 'Жүктеу', 'Мұрағаттау', 'Жөндеу (debugging)'], correct: 3 },
+      { category: 'Ақпарат өлшемдері', question: '1 килобайт дәстүрлі есептеуде неше байтқа тең?', answers: ['1024 байт', '100 байт', '8 байт', '1 000 000 байт'], correct: 0 },
+      { category: 'Киберқауіпсіздік', question: 'Екі факторлы аутентификация не үшін қажет?', answers: ['Экран жарықтығын арттыру үшін', 'Тіркелгіні қосымша растау арқылы қорғау үшін', 'Файл көлемін кішірейту үшін', 'Интернетті өшіру үшін'], correct: 1 },
+      { category: 'Деректер қоры', question: 'SQL тілі көбіне қандай мақсатта қолданылады?', answers: ['Бейне монтаждау', 'Веб-бетті бояу', 'Деректер қорындағы деректермен жұмыс істеу', 'Компьютерді тазалау'], correct: 2 },
+      { category: 'Операциялық жүйелер', question: 'Файлдарды топтап сақтауға арналған орын қалай аталады?', answers: ['Процессор', 'Жедел жад', 'Браузер', 'Бума (қапшық)'], correct: 3 }
+    ];
+
+    const homeView = document.getElementById('homeView');
+    const quizView = document.getElementById('quizView');
+    const resultView = document.getElementById('resultView');
+    const nameInput = document.getElementById('playerName');
+    const startForm = document.getElementById('startForm');
+    const nameError = document.getElementById('nameError');
+    const answersEl = document.getElementById('answers');
+    const nextButton = document.getElementById('nextButton');
+    const timeValue = document.getElementById('timeValue');
+    const timerEl = document.getElementById('timer');
+    const progressTrack = document.querySelector('.progress-track');
+    const letters = ['A', 'Ә', 'Б', 'В'];
+    const QUESTION_TIME = 60;
+    let playerName = '';
+    let deck = [];
+    let currentIndex = 0;
+    let score = 0;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let timeLeft = QUESTION_TIME;
+    let timerId = null;
+    let answered = false;
+
+    function showView(view) {
+      [homeView, quizView, resultView].forEach(item => item.classList.toggle('active', item === view));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startGame(event) {
+      event.preventDefault();
+      playerName = nameInput.value.trim();
+      if (!playerName) {
+        nameError.textContent = 'Ойынды бастау үшін атыңды енгіз.';
+        nameInput.setAttribute('aria-invalid', 'true');
+        nameInput.focus();
+        return;
+      }
+      nameError.textContent = '';
+      nameInput.removeAttribute('aria-invalid');
+      score = 0;
+      correctAnswers = 0;
+      wrongAnswers = 0;
+      currentIndex = 0;
+      deck = questions.map((_, index) => index);
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      document.getElementById('quizPlayer').textContent = playerName;
+      showView(quizView);
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      clearInterval(timerId);
+      answered = false;
+      timeLeft = QUESTION_TIME;
+      const item = questions[deck[currentIndex]];
+      document.getElementById('category').textContent = item.category;
+      document.getElementById('questionText').textContent = item.question;
+      document.getElementById('scoreValue').textContent = score;
+      document.getElementById('progressLabel').textContent = `${currentIndex + 1} / ${deck.length}`;
+      const progress = Math.round((currentIndex / deck.length) * 100);
+      document.getElementById('progressFill').style.width = `${progress}%`;
+      progressTrack.setAttribute('aria-valuenow', String(currentIndex));
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+      nextButton.disabled = true;
+      nextButton.innerHTML = currentIndex === deck.length - 1
+        ? 'Нәтижені көру <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+        : 'Келесі сұрақ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+      answersEl.replaceChildren();
+      item.answers.forEach((answer, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'answer';
+        button.innerHTML = `<span class="answer-key">${letters[index]}</span><span class="answer-text"></span>`;
+        button.querySelector('.answer-text').textContent = answer;
+        button.addEventListener('click', () => chooseAnswer(index));
+        answersEl.appendChild(button);
+      });
+      updateTimerDisplay();
+      timerId = window.setInterval(tick, 1000);
+    }
+
+    function updateTimerDisplay() {
+      timeValue.textContent = timeLeft;
+      timerEl.classList.toggle('urgent', timeLeft <= 5);
+      const degrees = Math.max(0, (timeLeft / QUESTION_TIME) * 360);
+      timerEl.querySelector('.timer-ring').style.setProperty('--timer-angle', `${degrees}deg`);
+    }
+
+    function tick() {
+      timeLeft -= 1;
+      updateTimerDisplay();
+      if (timeLeft <= 0) {
+        clearInterval(timerId);
+        answered = true;
+        wrongAnswers += 1;
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = 'Уақыт аяқталды. Келесі сұраққа өтуге болады.';
+        feedback.className = 'feedback neutral';
+        answersEl.querySelectorAll('.answer').forEach(button => { button.disabled = true; });
+        nextButton.disabled = false;
+      }
+    }
+
+    function chooseAnswer(selectedIndex) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerId);
+      const item = questions[deck[currentIndex]];
+      const buttons = [...answersEl.querySelectorAll('.answer')];
+      buttons.forEach((button, index) => {
+        button.disabled = true;
+        if (index === item.correct) button.classList.add('correct');
+      });
+      const feedback = document.getElementById('feedback');
+      if (selectedIndex === item.correct) {
+        score += 10;
+        correctAnswers += 1;
+        feedback.textContent = 'Дұрыс жауап! +10 ұпай';
+        feedback.className = 'feedback good';
+      } else {
+        wrongAnswers += 1;
+        buttons[selectedIndex].classList.add('wrong');
+        feedback.textContent = 'Қате жауап. Жасыл түспен дұрыс жауап көрсетілді.';
+        feedback.className = 'feedback bad';
+      }
+      document.getElementById('scoreValue').textContent = score;
+      nextButton.disabled = false;
+    }
+
+    function advance() {
+      if (!answered) return;
+      clearInterval(timerId);
+      if (currentIndex < deck.length - 1) {
+        currentIndex += 1;
+        renderQuestion();
+      } else {
+        finishGame();
+      }
+    }
+
+    function finishGame() {
+      clearInterval(timerId);
+      const percentage = Math.round((correctAnswers / deck.length) * 100);
+      document.getElementById('resultTitle').textContent = `${playerName}, жарайсың!`;
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('percentage').textContent = `${percentage}%`;
+      document.getElementById('correctCount').textContent = correctAnswers;
+      document.getElementById('wrongCount').textContent = wrongAnswers;
+      let note;
+      if (percentage >= 90) note = 'Тамаша нәтиже! Сен информатика әлемінің нағыз білгірісің.';
+      else if (percentage >= 70) note = 'Өте жақсы! Негізгі тақырыптарды жақсы меңгергенсің.';
+      else if (percentage >= 50) note = 'Жақсы талпыныс! Тағы бір рет ойнап, нәтижеңді жақсарт.';
+      else note = 'Бастауың жақсы! Қайталап ойнап, информатика біліміңді шыңдай түс.';
+      document.getElementById('resultNote').textContent = note;
+      document.getElementById('progressFill').style.width = '100%';
+      progressTrack.setAttribute('aria-valuenow', String(deck.length));
+      showView(resultView);
+    }
+
+    startForm.addEventListener('submit', startGame);
+    nameInput.addEventListener('input', () => {
+      if (nameInput.value.trim()) {
+        nameError.textContent = '';
+        nameInput.removeAttribute('aria-invalid');
+      }
+    });
+    nextButton.addEventListener('click', advance);
+    document.getElementById('restartButton').addEventListener('click', () => {
+      clearInterval(timerId);
+      nameInput.value = '';
+      nameError.textContent = '';
+      nameInput.removeAttribute('aria-invalid');
+      showView(homeView);
+      nameInput.focus();
+    });
+  </script>
+</body>
+</html>
